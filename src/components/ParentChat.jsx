@@ -1,20 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 
-const ESCALATION_PHRASES = [
-  'connect you with our team',
-  'speak with a staff member',
-  'contact our director',
-  "don't have enough information",
-  'beyond what I can help with',
-  'reach out to us directly',
-  "not something I'm able to",
-  'escalate this',
-]
-
-function detectEscalation(text) {
-  const lower = text.toLowerCase()
-  return ESCALATION_PHRASES.some((phrase) => lower.includes(phrase))
-}
 
 export default function ParentChat({ policies, addLogEntry }) {
   const [messages, setMessages] = useState([
@@ -84,13 +69,12 @@ export default function ParentChat({ policies, addLogEntry }) {
       const assistantMsg = { role: 'assistant', content: data.reply }
       setMessages((prev) => [...prev, assistantMsg])
 
-      const escalated = detectEscalation(data.reply)
       addLogEntry({
         id: Date.now(),
         timestamp: new Date().toISOString(),
         question: text,
         answer: data.reply,
-        escalated,
+        classification: data.classification || 'answered',
       })
     } catch (err) {
       const errorMsg = {
@@ -104,7 +88,7 @@ export default function ParentChat({ policies, addLogEntry }) {
         timestamp: new Date().toISOString(),
         question: text,
         answer: errorMsg.content,
-        escalated: true,
+        classification: 'escalated',
       })
     } finally {
       setLoading(false)

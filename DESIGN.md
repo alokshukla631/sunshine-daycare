@@ -7,8 +7,8 @@ A two-tab React application for a fictional daycare, "Sunshine Early Learning Ce
 1. **Parent Chat** — A mobile-friendly chat interface where parents type or speak questions about the daycare. An AI assistant responds using only the daycare's official policies as its knowledge base. The interface includes typing indicators, scrollable message history, voice input via the Web Speech API, multi-turn conversation context, and a clean bubble-style layout that feels natural on both phones and desktops.
 
 2. **Operator Dashboard** — A staff-facing view with three components:
-   - **Stats overview**: Real-time counters for total questions, successfully answered questions, and escalated questions
-   - **Chat log**: A filterable log of every conversation with CSV export. Each entry is expandable to show the full AI response. Escalated items are flagged with a red indicator for quick triage.
+   - **Stats overview**: Real-time counters for total questions, answered, escalated, and off-topic questions
+   - **Chat log**: A filterable log of every conversation with CSV export. Each entry is expandable to show the full AI response. Escalated items are flagged with a red indicator, off-topic items are grayed out, and there's a toggle to hide off-topic noise entirely so operators can focus on what matters.
    - **Policy editor**: A structured form that lets operators edit existing policy sections and create entirely new ones. For example, if the daycare starts a summer camp program, the operator clicks "+ New Section," names it "Summer Camp," and adds fields like schedule, pricing, and age range. They can also add new fields to any existing section with "+ Add field." Custom sections can be deleted when no longer needed. All changes propagate to the AI immediately.
 
 3. **Voice Input** — A microphone button in the chat bar uses the browser's built-in Web Speech API to capture speech and convert it to text. Especially useful for parents at drop-off who have their hands full. The button pulses red while listening and is gracefully hidden on browsers that don't support the API.
@@ -31,7 +31,7 @@ I chose not to add user authentication or a full database because they would add
 ┌─────────────┐     POST /api/chat      ┌──────────────────┐
 │  React App  │ ───────────────────────► │ Vercel Serverless │
 │  (Vite)     │ ◄─────────────────────── │   Function        │
-└─────────────┘     { reply }           └────────┬─────────┘
+└─────────────┘  { reply, classification } └────────┬─────────┘
        │                                          │
        │ policies JSON                            │ System prompt +
        │ (in React state)                         │ policies JSON
@@ -59,7 +59,7 @@ This is the most important design decision in the project. The AI must never mak
 
 - **Bounded conversation context**: The last 10 messages are sent as history for natural follow-ups, but the window is capped to prevent unbounded context drift. The system prompt and policy grounding are re-injected on every request, so the AI always has the authoritative policy data regardless of conversation history.
 
-- **Client-side escalation detection**: The frontend scans AI responses for escalation phrases ("connect you with our team," "reach out to us directly," etc.) and flags them in the dashboard. This gives operators visibility even if the AI's escalation phrasing varies slightly.
+- **Three-way classification**: Instead of a binary answered/escalated split, the AI classifies every response into one of three categories — `[ANSWERED]`, `[ESCALATED]`, or `[OFF-TOPIC]`. The tag is included at the start of the AI's response, parsed by the API layer, and stripped before showing to the parent. This means "what's the weather in Seattle?" gets tagged as off-topic (not escalated), so it doesn't clutter the operator's dashboard alongside real escalations like "I need to dispute my bill." The model handles this classification natively — gpt-4o-mini easily distinguishes between daycare-related questions and unrelated spam without any extra training.
 
 ## The Operator Feedback Loop
 
@@ -71,7 +71,7 @@ This is what makes the system improve over time rather than being a static chatb
 
 3. **Immediate policy updates**: The editor is structured by section (hours, tuition, holidays, etc.) with appropriate input types. Adding a new holiday is as simple as clicking "+ Add item" and typing the name. If the AI keeps escalating questions about a topic that doesn't exist yet — like summer camp — the operator can create an entirely new policy section, fill in the details, and the AI will start answering those questions immediately.
 
-4. **Measurable improvement**: The stats cards (Total / Answered / Escalated) give the operator a quick sense of how well the AI is performing. Over time, as they fill knowledge gaps, the escalation rate should drop — a concrete metric for AI improvement.
+4. **Measurable improvement**: The stats cards (Total / Answered / Escalated / Off-topic) give the operator a quick sense of how well the AI is performing. Over time, as they fill knowledge gaps, the escalation rate should drop — a concrete metric for AI improvement. Off-topic questions are tracked separately and hidden by default so they don't obscure real escalations.
 
 ## Tech Stack Decisions
 
