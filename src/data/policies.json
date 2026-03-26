@@ -1,0 +1,74 @@
+{
+  "daycare_name": "Sunshine Early Learning Center",
+  "hours": {
+    "weekdays": "6:30 AM – 6:00 PM",
+    "saturday": "8:00 AM – 1:00 PM",
+    "sunday": "Closed"
+  },
+  "holidays_closed": [
+    "New Year's Day",
+    "Martin Luther King Jr. Day",
+    "Presidents' Day",
+    "Memorial Day",
+    "Independence Day",
+    "Labor Day",
+    "Thanksgiving Day",
+    "Day after Thanksgiving",
+    "Christmas Eve",
+    "Christmas Day",
+    "New Year's Eve (half day, close at noon)"
+  ],
+  "tuition_rates": {
+    "infants_0_12_months": "$1,450/month",
+    "toddlers_1_2_years": "$1,300/month",
+    "preschool_3_4_years": "$1,150/month",
+    "pre_k_5_years": "$1,050/month",
+    "sibling_discount": "10% off second child",
+    "registration_fee": "$150 one-time",
+    "late_payment_fee": "$25 after the 5th of the month"
+  },
+  "sick_policy": {
+    "exclusion_criteria": [
+      "Fever of 100.4°F or higher",
+      "Vomiting or diarrhea within the last 24 hours",
+      "Contagious rash or pink eye",
+      "Head lice (until treated)"
+    ],
+    "return_policy": "Children must be symptom-free for 24 hours without medication before returning.",
+    "notification": "Parents will be called immediately if symptoms develop during the day. Pickup is required within 1 hour of notification."
+  },
+  "lunch_menu": {
+    "monday": "Grilled cheese, tomato soup, apple slices, milk",
+    "tuesday": "Chicken nuggets, steamed broccoli, rice, juice",
+    "wednesday": "Turkey & cheese wraps, carrot sticks, yogurt, water",
+    "thursday": "Mac & cheese, green beans, peaches, milk",
+    "friday": "Pizza bagels, side salad, graham crackers, juice"
+  },
+  "tour_scheduling": {
+    "available_times": "Tuesday and Thursday, 10:00 AM or 2:00 PM",
+    "how_to_book": "Call us at (555) 123-4567 or email tours@sunshineelc.com",
+    "duration": "Approximately 30 minutes",
+    "what_to_bring": "Photo ID, any questions you have about our programs"
+  },
+  "pickup_dropoff_rules": {
+    "dropoff_window": "6:30 AM – 9:00 AM",
+    "pickup_deadline": "6:00 PM",
+    "late_pickup_fee": "$1 per minute after 6:00 PM",
+    "authorized_persons": "Only persons listed on the pickup authorization form may pick up your child. Photo ID is required.",
+    "procedure": "All parents must sign in/out at the front desk. Children will only be released to authorized adults."
+  },
+  "emergency_contacts": {
+    "center_phone": "(555) 123-4567",
+    "center_email": "info@sunshineelc.com",
+    "director": "Ms. Angela Rivera",
+    "assistant_director": "Mr. James Chen",
+    "after_hours_emergency": "(555) 999-0000"
+  },
+  "additional_policies": {
+    "potty_training": "We work with families on potty training for toddlers. Please send extra clothes.",
+    "nap_time": "12:30 PM – 2:30 PM for all rooms. Infants nap on their own schedule.",
+    "outdoor_play": "Weather permitting, children have outdoor play twice daily. Please apply sunscreen before drop-off in summer.",
+    "birthdays": "We love celebrating! Store-bought treats only, and please notify us 3 days in advance.",
+    "communication": "Daily reports are sent via the Sunshine app. Weekly newsletters go out every Friday."
+  }
+}
