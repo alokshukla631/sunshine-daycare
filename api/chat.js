@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { message, policies } = req.body
+  const { message, policies, history } = req.body
 
   if (!message || !policies) {
     return res.status(400).json({ error: 'Missing message or policies' })
@@ -37,6 +37,7 @@ ${JSON.stringify(policies, null, 2)}`
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
+          ...(Array.isArray(history) ? history.slice(-10) : []),
           { role: 'user', content: message },
         ],
         max_tokens: 500,

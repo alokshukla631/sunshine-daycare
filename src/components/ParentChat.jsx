@@ -71,10 +71,11 @@ export default function ParentChat({ policies, addLogEntry }) {
     setLoading(true)
 
     try {
+      const history = messages.slice(-10).map(({ role, content }) => ({ role, content }))
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, policies }),
+        body: JSON.stringify({ message: text, policies, history }),
       })
 
       if (!res.ok) throw new Error('Failed to get response')
