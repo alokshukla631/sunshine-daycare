@@ -4,18 +4,26 @@
 
 A two-tab React application for a fictional daycare, "Sunshine Early Learning Center," that demonstrates how AI can handle routine parent inquiries while keeping human staff in the loop for anything the AI can't confidently answer.
 
-1. **Parent Chat** — A mobile-friendly chat interface where parents type questions about the daycare. An AI assistant responds using only the daycare's official policies as its knowledge base. The interface includes typing indicators, scrollable message history, and a clean bubble-style layout that feels natural on both phones and desktops.
+1. **Parent Chat** — A mobile-friendly chat interface where parents type or speak questions about the daycare. An AI assistant responds using only the daycare's official policies as its knowledge base. The interface includes typing indicators, scrollable message history, voice input via the Web Speech API, multi-turn conversation context, and a clean bubble-style layout that feels natural on both phones and desktops.
 
 2. **Operator Dashboard** — A staff-facing view with three components:
    - **Stats overview**: Real-time counters for total questions, successfully answered questions, and escalated questions
-   - **Chat log**: A searchable, filterable log of every conversation. Each entry is expandable to show the full AI response. Escalated items are flagged with a red indicator for quick triage.
+   - **Chat log**: A filterable log of every conversation with CSV export. Each entry is expandable to show the full AI response. Escalated items are flagged with a red indicator for quick triage.
    - **Policy editor**: A structured form that lets operators edit any policy section — hours, tuition, holidays, lunch menus, sick policy, pickup rules, and more. Changes propagate to the AI immediately.
+
+3. **Voice Input** — A microphone button in the chat bar uses the browser's built-in Web Speech API to capture speech and convert it to text. Especially useful for parents at drop-off who have their hands full. The button pulses red while listening and is gracefully hidden on browsers that don't support the API.
+
+4. **Multi-turn Conversations** — The last 10 messages are sent as conversation history with each API call, so parents can ask natural follow-up questions like "What about Saturdays?" after asking about hours, without repeating context.
+
+5. **Persistent Storage** — Policies and chat logs are saved to localStorage, so data survives page refreshes. On app load, saved data is restored automatically.
+
+6. **CSV Export** — Operators can download the full chat log as a CSV file with timestamps, questions, AI responses, and escalation status — useful for reporting and offline analysis.
 
 ### Why I Scoped It This Way
 
 The goal was to demonstrate a complete feedback loop: parent asks a question → AI answers from policy data → operator sees the interaction → operator improves the policies → AI gets better. I intentionally kept the scope tight — one chat interface, one dashboard, one shared policy document, no auth, no database — so every piece works end-to-end without loose ends. This isn't a prototype with placeholder screens; both the parent and operator experiences are fully functional.
 
-I chose not to add user authentication or a database because they would add complexity without demonstrating the core value proposition: an AI that's grounded in operator-controlled knowledge and knows when to escalate. For a production version, these would obviously be needed.
+I chose not to add user authentication or a full database because they would add complexity without demonstrating the core value proposition: an AI that's grounded in operator-controlled knowledge and knows when to escalate. localStorage provides enough persistence for a demo, and for a production version, a proper database and auth would be needed.
 
 ## Architecture
 
@@ -49,7 +57,7 @@ This is the most important design decision in the project. The AI must never mak
 
 - **Low temperature (0.3)**: I set the temperature well below the default (1.0) to reduce creative or speculative responses. For a factual Q&A system, I want the AI to be conservative and repetitive rather than inventive.
 
-- **Stateless requests**: Each question is answered independently against the policy document. There's no conversation history sent to the API, which prevents the AI from building up incorrect context over multiple turns. (Multi-turn context is listed as a future improvement, but it would need careful handling to avoid context drift.)
+- **Bounded conversation context**: The last 10 messages are sent as history for natural follow-ups, but the window is capped to prevent unbounded context drift. The system prompt and policy grounding are re-injected on every request, so the AI always has the authoritative policy data regardless of conversation history.
 
 - **Client-side escalation detection**: The frontend scans AI responses for escalation phrases ("connect you with our team," "reach out to us directly," etc.) and flags them in the dashboard. This gives operators visibility even if the AI's escalation phrasing varies slightly.
 
@@ -73,15 +81,13 @@ This is what makes the system improve over time rather than being a static chatb
 | **Tailwind CSS v4** | Utility-first approach means I didn't need to write any custom CSS files. Every style is co-located with the component. Mobile responsiveness comes from Tailwind's responsive prefixes. |
 | **OpenAI gpt-4o-mini** | The cheapest OpenAI model that's still good at following system prompt instructions. For policy Q&A, it doesn't need to be the most powerful model — it needs to be fast, cheap, and obedient to the grounding instructions. |
 | **Vercel Serverless Functions** | The API route (`api/chat.js`) deploys as a serverless function automatically. No server to manage, scales to zero when not in use, and the OpenAI API key stays server-side (never exposed to the browser). |
-| **No database** | Intentional for demo scope. Policies and chat logs live in React state. This means data resets on page refresh, but it keeps the architecture simple and the focus on the AI interaction pattern. |
+| **localStorage** | Policies and chat logs persist across page refreshes via localStorage. No backend database to set up, but sufficient for a demo. A production version would use a proper database. |
 
 ## What I'd Add With More Time
 
-- **Voice input**: The Web Speech API can capture voice and convert to text in about 10 lines of code. Especially useful for parents at drop-off who have their hands full.
-- **Persistent storage**: Replace React state with a lightweight database (Vercel KV or Supabase) so policies and chat logs survive page refreshes. This is the most impactful improvement for real-world use.
-- **Multi-turn context**: Send the last 5 messages as conversation history so parents can ask follow-up questions ("What about on Saturdays?" after asking about hours). Would need guardrails to prevent context drift.
 - **Analytics dashboard**: Charts showing most common question categories, peak usage times, and escalation rate trends over days/weeks. This would help operators proactively improve policies.
 - **Auto-suggested policy updates**: When the AI escalates the same topic 3+ times, automatically surface a suggestion to the operator: "Parents keep asking about summer programs — consider adding a policy section for this."
 - **Authentication**: Separate parent and operator logins so the dashboard is access-controlled and chat history is per-parent.
 - **Notification system**: Real-time alerts (browser notifications or email) to operators when an escalation happens, so they can respond quickly.
-- **Export functionality**: Let operators export the chat log as CSV for reporting, or export the policy JSON as a backup.
+- **Full database backend**: Replace localStorage with Vercel KV or Supabase for multi-device sync and production-grade persistence.
+- **Policy JSON backup/restore**: Let operators export and import the full policy JSON file for versioning and disaster recovery.
