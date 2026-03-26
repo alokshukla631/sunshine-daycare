@@ -1,16 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import ParentChat from './components/ParentChat'
 import OperatorDashboard from './components/OperatorDashboard'
 import defaultPolicies from './data/policies.json'
 
+function loadFromStorage(key, fallback) {
+  try {
+    const stored = localStorage.getItem(key)
+    return stored ? JSON.parse(stored) : fallback
+  } catch {
+    return fallback
+  }
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('chat')
-  const [policies, setPolicies] = useState(defaultPolicies)
-  const [chatLog, setChatLog] = useState([])
+  const [policies, setPolicies] = useState(() => loadFromStorage('sunshine_policies', defaultPolicies))
+  const [chatLog, setChatLog] = useState(() => loadFromStorage('sunshine_chatlog', []))
 
-  const addLogEntry = (entry) => {
+  useEffect(() => {
+    localStorage.setItem('sunshine_policies', JSON.stringify(policies))
+  }, [policies])
+
+  useEffect(() => {
+    localStorage.setItem('sunshine_chatlog', JSON.stringify(chatLog))
+  }, [chatLog])
+
+  const addLogEntry = useCallback((entry) => {
     setChatLog((prev) => [entry, ...prev])
-  }
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
