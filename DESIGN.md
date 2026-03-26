@@ -9,7 +9,7 @@ A two-tab React application for a fictional daycare, "Sunshine Early Learning Ce
 2. **Operator Dashboard** — A staff-facing view with three components:
    - **Stats overview**: Real-time counters for total questions, successfully answered questions, and escalated questions
    - **Chat log**: A filterable log of every conversation with CSV export. Each entry is expandable to show the full AI response. Escalated items are flagged with a red indicator for quick triage.
-   - **Policy editor**: A structured form that lets operators edit any policy section — hours, tuition, holidays, lunch menus, sick policy, pickup rules, and more. Changes propagate to the AI immediately.
+   - **Policy editor**: A structured form that lets operators edit existing policy sections and create entirely new ones. For example, if the daycare starts a summer camp program, the operator clicks "+ New Section," names it "Summer Camp," and adds fields like schedule, pricing, and age range. They can also add new fields to any existing section with "+ Add field." Custom sections can be deleted when no longer needed. All changes propagate to the AI immediately.
 
 3. **Voice Input** — A microphone button in the chat bar uses the browser's built-in Web Speech API to capture speech and convert it to text. Especially useful for parents at drop-off who have their hands full. The button pulses red while listening and is gracefully hidden on browsers that don't support the API.
 
@@ -69,7 +69,7 @@ This is what makes the system improve over time rather than being a static chatb
 
 2. **Escalation signals**: Flagged conversations tell the operator exactly where the AI's knowledge has gaps. If the AI keeps escalating "do you have a summer camp program?" — the operator knows to add a summer camp section to the policies.
 
-3. **Immediate policy updates**: The editor is structured by section (hours, tuition, holidays, etc.) with appropriate input types. Adding a new holiday is as simple as clicking "+ Add item" and typing the name. The AI uses the updated policies on the very next question.
+3. **Immediate policy updates**: The editor is structured by section (hours, tuition, holidays, etc.) with appropriate input types. Adding a new holiday is as simple as clicking "+ Add item" and typing the name. If the AI keeps escalating questions about a topic that doesn't exist yet — like summer camp — the operator can create an entirely new policy section, fill in the details, and the AI will start answering those questions immediately.
 
 4. **Measurable improvement**: The stats cards (Total / Answered / Escalated) give the operator a quick sense of how well the AI is performing. Over time, as they fill knowledge gaps, the escalation rate should drop — a concrete metric for AI improvement.
 
