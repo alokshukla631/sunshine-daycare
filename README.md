@@ -1,16 +1,29 @@
-# React + Vite
+# Sunshine Early Learning Center
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AI-powered front desk assistant for a daycare — parents chat, operators manage policies, and the AI gets smarter over time.
 
-Currently, two official plugins are available:
+**Live app:** https://sunshine-daycare.vercel.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Parent Chat** — Mobile-friendly chat with voice input and multi-turn conversations
+- **Operator Dashboard** — Stats, filterable chat log with CSV export, and a live policy editor
+- **AI Grounding** — Answers only from the policy knowledge base, escalates what it can't handle
+- **Spam Detection** — Three-way classification (answered / escalated / off-topic) keeps the dashboard clean
+- **Persistent Storage** — Policies and chat history survive page refreshes via localStorage
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+React, Tailwind CSS v4, OpenAI gpt-4o-mini, Vercel Serverless Functions
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Running Locally
+
+```bash
+npm install
+cp .env.example .env        # add your OPENAI_API_KEY
+npm run dev                  # starts on http://localhost:3000
+```
+
+## Design Decisions
+
+See [DESIGN.md](./DESIGN.md) for architecture, grounding strategy, feedback loop, and future improvements.
