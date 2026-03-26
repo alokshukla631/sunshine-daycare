@@ -1,5 +1,32 @@
 import { useState } from 'react'
 
+function escapeCsvField(str) {
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return '"' + str.replace(/"/g, '""') + '"'
+  }
+  return str
+}
+
+function exportToCsv(chatLog) {
+  const header = 'Timestamp,Question,Answer,Escalated'
+  const rows = chatLog.map((e) =>
+    [
+      e.timestamp,
+      escapeCsvField(e.question),
+      escapeCsvField(e.answer),
+      e.escalated ? 'Yes' : 'No',
+    ].join(',')
+  )
+  const csv = [header, ...rows].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `sunshine-chat-log-${new Date().toISOString().slice(0, 10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export default function ChatLogTable({ chatLog }) {
   const [filter, setFilter] = useState('all')
 
@@ -20,8 +47,8 @@ export default function ChatLogTable({ chatLog }) {
 
   return (
     <div className="space-y-3">
-      {/* Filter buttons */}
-      <div className="flex gap-2">
+      {/* Filter buttons + export */}
+      <div className="flex gap-2 items-center">
         {['all', 'escalated', 'answered'].map((f) => (
           <button
             key={f}
@@ -36,6 +63,12 @@ export default function ChatLogTable({ chatLog }) {
             {f === 'escalated' && ` (${chatLog.filter((e) => e.escalated).length})`}
           </button>
         ))}
+        <button
+          onClick={() => exportToCsv(chatLog)}
+          className="ml-auto px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+        >
+          Export CSV
+        </button>
       </div>
 
       {/* Log entries */}
